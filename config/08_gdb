@@ -1,0 +1,11 @@
+#!/bin/bash
+
+SRC=bz2
+URL=http://ftp.gnu.org/gnu/gdb/gdb-7.5.tar.$SRC
+
+CFG=(
+	--build=$HOST
+	--prefix=$DIR_BLD
+	--enable-lto
+	--with-{gmp,mpfr,mpc}=$DIR_DEP
+)

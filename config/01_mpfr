@@ -1,0 +1,15 @@
+#!/bin/bash
+
+# http://www.mpfr.org/mpfr-current/allpatches
+# or
+# svn co svn://scm.gforge.inria.fr/svn/mpfr/branches/3.1 mpfr-3.1
+
+SRC=xz
+URL=http://www.mpfr.org/mpfr-current/mpfr-3.1.1.tar.$SRC
+
+CFG=(
+	--build=$HOST
+	--prefix=$DIR_DEP
+	--disable-shared
+	--with-gmp=$DIR_DEP
+)

@@ -1,0 +1,10 @@
+#!/bin/bash
+
+SRC=svn
+URL=http://mingw-w64.svn.sourceforge.net/svnroot/mingw-w64/experimental/winpthreads
+
+CFG=(
+	--build=$HOST
+	--prefix=$DIR_BLD
+	--enable-{static,shared}
+)

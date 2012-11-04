@@ -1,0 +1,214 @@
+#!/bin/bash
+
+#
+# Problems, that can happen:
+#
+#  Q.: GCC sanity check failed.
+#  A.: remove CFLAGS from configure/make stage.
+#
+
+#
+# conventions:
+#  VAR			- global variable
+#  _VAR			- temporary global variable
+#  var			- temporary (global) variable
+#  local _var	- local variable
+
+DIR_TOP=$PWD
+DIR_CFG=$PWD/config
+DIR_SRC=$PWD/source
+DIR_REL=$PWD/release
+DIR_BLD=$DIR_REL/mingw
+DIR_TMP=_build
+DIR_TAG=$DIR_SRC/_tags
+DIR_DEP=$DIR_SRC/_deps
+
+
+ARCH=i686
+HOST=${ARCH}-w64-mingw32
+JOBS=4
+
+
+# foreground colors
+#BLACK='\e[30m'
+#RED='\e[31m'
+GREEN='\e[32m'
+YELLOW='\e[33m'
+WHITE='\e[37m'
+DEFAULT_COLOR='\e[0m'
+CLEAR_REST='\033[0K'	# clears rest of line
+
+timestamp() { echo -ne $YELLOW"[`date +%H:%M:%S`] "; }
+
+# prints error message and exits with return code 1
+# $1 - error message
+error() { echo; timestamp; echo -e '\e[31m'$1$DEFAULT_COLOR; exit 1; }
+
+# $1 - action
+# $2 - message
+status() { echo -ne "\r"; timestamp; echo -ne $WHITE$1 $GREEN$2$DEFAULT_COLOR$CLEAR_REST; }
+result() { echo -ne "\r"; timestamp; echo  -e $WHITE$1 $GREEN$2$CLEAR_REST; }
+
+# check for DIR, make it, enter it
+check_make_enter() { [[ ! -d $1 ]] && mkdir $1; cd $1; }
+
+#lines() { return `wc -l $1 | cut -f1 -d' '`; }
+
+download() {
+	local tag=$DIR_TAG/${PKG}_0.downloaded
+	[[ ! -f $tag ]] && {
+
+		status $PKG "downloading"
+		local log=$DIR_TOP/${PKG}_download.log
+
+		case $SRC in
+			svn)
+				svn co $URL $DIR_SRC/$PKG > $log 2>&1 ;;
+
+			git)
+				git clone $URL $DIR_SRC/$PKG > $log 2>&1 ;;
+
+			*)
+				case $SRC in
+					gz) flg=z ;;
+					bz2) flg=j ;;
+					xz|lzma) flg=J ;;
+				esac
+				wget -O - $URL 2> $log | tar x${flg}f - -C $DIR_SRC > $log 2>&1 && mv $DIR_SRC/${PKG}* $DIR_SRC/$PKG >> $log 2>&1
+				;;
+		esac
+		[[ $? != 0 ]] && error "download error, see $log"
+		rm -f $log > /dev/null 2>&1
+		touch $tag
+	}
+}
+
+configure() {
+	local tag=$DIR_TAG/${PKG}_1.configured
+	[[ ! -f $tag ]] && {
+
+		status $PKG "configuring"
+		local log=$DIR_TOP/${PKG}_configure.log
+
+		check_make_enter $DIR_SRC/$PKG/$DIR_TMP
+		../configure --help > _${PKG}-help.txt
+		../configure ${CFG[@]} > $log 2>&1 || error "configure error, see $log (or _${PKG}-help.txt for help)"
+
+		rm -f $log > /dev/null 2>&1
+		touch $tag
+	}
+}
+
+build() {
+	local tag=$DIR_TAG/${PKG}_2.builded
+	[[ ! -f $tag ]] && {
+
+		status $PKG "building"
+		local log=$DIR_TOP/${PKG}_build.log
+
+		cd $DIR_SRC/$PKG/$DIR_TMP
+		make -j$JOBS "CFLAGS=$CFL" > $log 2>&1 || error "make error, see $log"
+
+		rm -f $log > /dev/null 2>&1
+		touch $tag
+	}
+}
+
+install() {
+	local tag=$DIR_TAG/${PKG}_3.installed
+	[[ ! -f $tag ]] && {
+
+		status $PKG "installing"
+		local log=$DIR_TOP/${PKG}_install.log
+
+		cd $DIR_SRC/$PKG/$DIR_TMP
+		make install-strip > $log 2>&1 || make install > $log 2>&1 || error "install error, see $log"
+
+		rm -f $log > /dev/null 2>&1
+		touch $tag
+
+		[[ ! -z $CMD_POST ]] && {
+			local tag=$DIR_TAG/${PKG}_4.post_installed
+			status $PKG "post installing"
+			$CMD_POST >> $log 2>&1 || error "CMD_POST error, see $log"
+			rm -f $log > /dev/null 2>&1
+			touch $tag
+		}
+	}
+}
+
+
+#
+# entry point
+#
+[[ -z $1 ]] && {
+	echo "use: ./${0##*/} <build|clean|snapshot>"
+	exit 0
+}
+
+case $1 in
+	snapshot)
+		log=${1}.log
+		status "taking $1" "..."
+		tar cJf ${0##*/}-$1-`date +%Y%m%d`-`date +%H%M%S`.tar.xz ${0##*/} config > $log 2>&1 || error "taking $1 error, see $log"
+		rm -f $log > /dev/null 2>&1
+		result "snapshot" "ready"
+		exit 0
+		;;
+
+	clean)
+		status "MinGW" "cleaning..."
+		for i in $DIR_CFG/*; do
+			[[ -d $DIR_SRC/${i##*_}/$DIR_TMP ]] && { rm -rf $DIR_SRC/${i##*_}/$DIR_TMP > /dev/null 2>&1 || error "$1 error"; }
+		done
+		[[ -d $DIR_DEP ]] && { rm -rf $DIR_DEP > /dev/null 2>&1 || error "$1 error"; }
+		rm -f $DIR_TAG/*.{configured,builded,installed}
+		result "MinGW" "cleaned up"
+		exit 0
+		;;
+
+	*)
+		TIME_START=$(date +%s)
+
+		# prepare dirs.
+		[[ ! -d $DIR_SRC ]] && mkdir -p $DIR_SRC
+		[[ ! -d $DIR_TAG ]] && mkdir -p $DIR_TAG
+
+		for pkg in $DIR_CFG/*; do
+			PKG=${pkg##*_}
+
+			CMD_POST=
+			CFL=
+
+			. $pkg
+			CFL="-fomit-frame-pointer $CFL"
+
+			#echo $URL | grep svn
+
+			download
+			configure
+			build
+			install
+			result $PKG "ok"
+		done
+
+		status "MinGW" "postprocessing"
+		[[ -d $DIR_BLD/include ]] && mv $DIR_BLD/include $DIR_BLD/i686-w64-mingw32
+		[[ -d $DIR_BLD/lib/gcc/i686-w64-mingw32/lib ]] && mv $DIR_BLD/lib/gcc/i686-w64-mingw32/lib/* $DIR_BLD/lib && rm -rf $DIR_BLD/lib/gcc/i686-w64-mingw32/lib
+		[[ -d $DIR_BLD/i686-w64-mingw32/bin ]] && rm -rf $DIR_BLD/i686-w64-mingw32/bin
+		[[ -d $DIR_BLD/i686-w64-mingw32/lib ]] && rm -rf $DIR_BLD/i686-w64-mingw32/lib
+		[[ -d $DIR_BLD/share ]] && rm -rf $DIR_BLD/share
+		rm -f $DIR_BLD/bin/i686-w64-mingw32*.exe
+
+		status "MinGW" "compress"
+		[[ -d $DIR_BLD ]] && 7za a -mx=9 -md=64m -ms=on -mmt ${0##*/}-4.7.2-$ARCH-`date +%Y%m%d`-`date +%H%M%S`.7z $DIR_BLD > /dev/null 2>&1
+
+		result "MinGW" "ok"
+
+		dt=$(($(date +%s) - $TIME_START))
+		ds=$((dt % 60))
+		dm=$(((dt / 60) % 60))
+		dh=$((dt / 3600))
+		result "Build time:" $(printf '%d:%02d:%02d' $dh $dm $ds)
+		;;
+esac

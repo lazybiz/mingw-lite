@@ -1,0 +1,20 @@
+#!/bin/bash
+
+# with Mercurial:
+# for the current patch level of GMP 5.0
+# hg clone http://gmplib.org:8000/gmp-5.0 TARGDIR
+
+# deps.: no
+
+SRC=bz2
+URL=ftp://ftp.gmplib.org/pub/gmp-5.0.5/gmp-5.0.5.tar.$SRC
+
+CFG=(
+	--build=$HOST
+	--prefix=$DIR_DEP
+	--enable-cxx
+	--disable-shared
+)
+
+# CMD_POST="cp -f $DIR_DEP/bin/libgmp*.dll $DIR_BLD/bin"
+# CMD_POST="$CMD_MAKE check"

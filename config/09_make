@@ -1,0 +1,19 @@
+#!/bin/bash
+
+# mirror
+# http://mirror.bjtu.edu.cn/gnu/make/
+
+SRC=bz2
+URL=http://ftp.gnu.org/gnu/make/make-3.82.tar.$SRC
+
+CFG=(
+	--build=$HOST
+	--prefix=$DIR_BLD
+	#--with-sysroot=$DIR_DEP
+	#--with-build-sysroot=$DIR_DEP
+	--program-prefix=mingw32-
+	--disable-{nls,rpath}
+	--enable-case-insensitive-file-system
+)
+
+#_CFLAGS="-march=corei7"
