@@ -1,19 +1,5 @@
 #!/bin/bash
 
-#
-# Problems, that can happen:
-#
-#  Q.: GCC sanity check failed.
-#  A.: remove CFLAGS from configure/make stage.
-#
-
-#
-# conventions:
-#  VAR			- global variable
-#  _VAR			- temporary global variable
-#  var			- temporary (global) variable
-#  local _var	- local variable
-
 DIR_TOP=$PWD
 DIR_CFG=$PWD/config
 DIR_SRC=$PWD/source
@@ -29,9 +15,6 @@ HOST=${ARCH}-w64-mingw32
 JOBS=4
 
 
-# foreground colors
-#BLACK='\e[30m'
-#RED='\e[31m'
 GREEN='\e[32m'
 YELLOW='\e[33m'
 WHITE='\e[37m'
@@ -51,8 +34,6 @@ result() { echo -ne "\r"; timestamp; echo  -e $WHITE$1 $GREEN$2$CLEAR_REST; }
 
 # check for DIR, make it, enter it
 check_make_enter() { [[ ! -d $1 ]] && mkdir $1; cd $1; }
-
-#lines() { return `wc -l $1 | cut -f1 -d' '`; }
 
 download() {
 	local tag=$DIR_TAG/${PKG}_0.downloaded
