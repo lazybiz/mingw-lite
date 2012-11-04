@@ -1,19 +1,13 @@
 #!/bin/bash
 
-# svn checkout svn://gcc.gnu.org/svn/gcc/trunk SomeLocalDir
-
 SRC=bz2
 URL=http://mirrors.webhostinggeeks.com/gcc/releases/gcc-4.7.2/gcc-4.7.2.tar.$SRC
 
 CFG=(
 	--build=$HOST
 	--prefix=$DIR_BLD
-	#
-	#$DIR_TOP
 	--with-sysroot=$DIR_REL
-	#--program-prefix=
 	#
-	#--with-gxx-include-dir=no
 	--enable-version-specific-runtime-libs
 	#
 	--with-pkgversion='MinGW-lite'
@@ -28,12 +22,5 @@ CFG=(
 	--enable-languages=c,c++,lto
 	--disable-{libstdcxx-pch,bootstrap,nls,multilib,win32-registry,rpath,werror,symvers}
 	#
-	#--disable-ppl-version-check
-	#--disable-cloog-version-check
-	#
-	#--with-host-libstdcxx=-lstdc++
-	#--with-host-libstdcxx='-Wl,-Bstatic,-lstdc++,-Bdynamic,-lm'
 	--with-{gmp,mpfr,mpc}=$DIR_DEP
-	#
-	#--enable-cloog-backend=isl
 )

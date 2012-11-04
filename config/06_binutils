@@ -1,7 +1,5 @@
 #!/bin/bash
 
-# deps.: no
-
 SRC=gz
 URL=http://ftp.gnu.org/gnu/binutils/binutils-2.23.tar.$SRC
 
