@@ -193,6 +193,7 @@ case $1 in
 			install
 			result $PKG "ok"
 		done
+		cd $DIR_TOP
 
 		status "MinGW" "postprocessing"
 		[[ -d $DIR_BLD/include ]] && mv $DIR_BLD/include $DIR_BLD/${ARCH}-w64-mingw32

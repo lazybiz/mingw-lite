@@ -1,0 +1,8 @@
+#!/bin/bash
+
+URL=http://www.tortall.net/projects/yasm/releases/yasm-1.2.0.tar.gz
+
+CFG=(
+	--prefix=$DIR_BLD
+	--disable-{nls,rpath}
+)
