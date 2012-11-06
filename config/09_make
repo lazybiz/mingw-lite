@@ -1,14 +1,10 @@
 #!/bin/bash
 
-SRC=bz2
-URL=http://ftp.gnu.org/gnu/make/make-3.82.tar.$SRC
+#URL=:pserver:anonymous@cvs.sv.gnu.org:/sources/make
+URL=http://ftp.gnu.org/gnu/make/make-3.82.tar.bz2
 
 CFG=(
-	--build=$HOST
 	--prefix=$DIR_BLD
-	#--with-sysroot=$DIR_DEP
-	#--with-build-sysroot=$DIR_DEP
 	--program-prefix=mingw32-
-	--disable-{nls,rpath}
-	--enable-case-insensitive-file-system
+	--enable-{job-server,case-insensitive-file-system}
 )

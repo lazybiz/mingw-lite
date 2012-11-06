@@ -1,12 +1,10 @@
 #!/bin/bash
 
-SRC=gz
-URL=http://ftp.gnu.org/gnu/binutils/binutils-2.23.tar.$SRC
+URL=http://ftp.gnu.org/gnu/binutils/binutils-2.23.tar.gz
 
 CFG=(
-	--build=$HOST
 	--prefix=$DIR_BLD
 	--with-sysroot=$DIR_DEP
 	--enable-lto
-	--disable-{nls,multilib,bootstrap}
+	--disable-{multilib,nls,bootstrap}
 )

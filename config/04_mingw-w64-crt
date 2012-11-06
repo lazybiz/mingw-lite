@@ -1,11 +1,9 @@
 #!/bin/bash
 
-SRC=svn
 URL=http://mingw-w64.svn.sourceforge.net/svnroot/mingw-w64/trunk/mingw-w64-crt
 
 CFG=(
-	--build=$HOST
 	--prefix=$DIR_BLD
-	--enable-lib32
-	--disable-{lib64,tests-unicode}
+	--enable-lib$BITS
+	--disable-{lib$STIB,tests-unicode}
 )

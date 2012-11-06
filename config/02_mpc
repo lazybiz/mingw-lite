@@ -1,10 +1,8 @@
 #!/bin/bash
 
-SRC=gz
-URL=http://www.multiprecision.org/mpc/download/mpc-1.0.1.tar.$SRC
+URL=http://www.multiprecision.org/mpc/download/mpc-1.0.1.tar.gz
 
 CFG=(
-	--build=$HOST
 	--prefix=$DIR_DEP
 	--disable-shared
 	--with-{gmp,mpfr}=$DIR_DEP
