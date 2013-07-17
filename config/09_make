@@ -1,10 +1,15 @@
 #!/bin/bash
 
 #URL=:pserver:anonymous@cvs.sv.gnu.org:/sources/make
-URL=http://ftp.gnu.org/gnu/make/make-3.82.tar.bz2
+URL=(
+	http://ftp.gnu.org/gnu/make/make-3.82.tar.bz2
+)
+
+EXC=tests,doc
 
 CFG=(
 	--prefix=$DIR_BLD
 	--program-prefix=mingw32-
-	--enable-{job-server,case-insensitive-file-system}
+	--enable-{shared,job-server,case-insensitive-file-system}
+	--disable-{static,nls,rpath}
 )

@@ -1,9 +1,10 @@
 #!/bin/bash
 
-URL=ftp://ftp.gmplib.org/pub/gmp-5.0.5/gmp-5.0.5.tar.bz2
+URL=(
+	ftp://ftp.gmplib.org/pub/gmp-5.1.2/gmp-5.1.2.tar.xz
+)
 
 CFG=(
 	--prefix=$DIR_DEP
-	--enable-cxx
 	--disable-shared
 )

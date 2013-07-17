@@ -1,9 +1,12 @@
 #!/bin/bash
 
-URL=http://ftp.gnu.org/gnu/gdb/gdb-7.5.tar.bz2
+URL=(
+	http://ftp.gnu.org/gnu/gdb/gdb-7.6.tar.bz2
+)
 
 CFG=(
 	--prefix=$DIR_BLD
 	--enable-lto
+	--disable-bootstrap
 	--with-{gmp,mpfr,mpc}=$DIR_DEP
 )

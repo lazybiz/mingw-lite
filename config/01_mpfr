@@ -1,9 +1,11 @@
 #!/bin/bash
 
-URL=http://www.mpfr.org/mpfr-current/mpfr-3.1.1.tar.xz
+URL=(
+	http://www.mpfr.org/mpfr-current/mpfr-3.1.2.tar.xz
+)
 
 CFG=(
-	--prefix=$DIR_DEP
+	--{prefix,with-gmp}=$DIR_DEP
 	--disable-shared
-	--with-gmp=$DIR_DEP
+	--enable-thread-safe
 )

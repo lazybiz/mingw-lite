@@ -1,10 +1,16 @@
 #!/bin/bash
 
-URL=http://ftp.gnu.org/gnu/binutils/binutils-2.23.tar.gz
+URL=(
+	http://ftp.gnu.org/gnu/binutils/binutils-2.23.2.tar.bz2
+)
+
+PATCH=(
+	binutils-doc.patch
+)
 
 CFG=(
 	--prefix=$DIR_BLD
 	--with-sysroot=$DIR_DEP
-	--enable-lto
-	--disable-{multilib,nls,bootstrap}
+	--enable-{shared,lto}
+	--disable-{static,multilib,nls,bootstrap}
 )

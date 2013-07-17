@@ -1,6 +1,8 @@
 #!/bin/bash
 
-URL=http://mingw-w64.svn.sourceforge.net/svnroot/mingw-w64/experimental/winpthreads
+URL=(
+	http://mingw-w64.svn.sourceforge.net/svnroot/mingw-w64/trunk/mingw-w64-libraries/winpthreads
+)
 
 CFG=(
 	--prefix=$DIR_BLD

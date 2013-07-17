@@ -1,0 +1,43 @@
+#!/bin/sh
+
+# $1 - DIR_SRC
+# $2 - PKG
+# $3 - URL array
+# $4 - EXC (exclude directory list)
+
+. ./script/tools
+
+tag=$1/_tags/${2}_0.downloaded
+[[ ! -f $tag ]] && {
+	log=$1/_logs/${2}_download.log
+
+	for i in ${3[@]}; do
+		echo -n " $2"
+		case $i in
+			*cvs*)
+				cd $1
+				cvs -z3 -d $i co $2 > $log 2>&1
+				cd ..
+				;;
+
+			*svn*)
+				svn co $i $1/$2 > $log 2>&1
+				;;
+
+			*git*)
+				git clone $i $1/$2 > $log 2>&1
+				;;
+
+			*tar*)
+				case $i in
+					*gz*) flg=z ;;
+					*bz2*) flg=j ;;
+					*xz*|*lzma*) flg=J ;;
+				esac
+				wget -O - $i 2> $log | tar x${flg}f - -C $1 `eval "echo --exclude=$4"` > $log 2>&1 && mv $1/${2}* $1/$2 >> $log 2>&1
+				;;
+		esac
+		[[ $? != 0 ]] && error "download error, see $log"
+	done
+	touch $tag
+}

@@ -1,0 +1,21 @@
+#!/bin/sh
+
+COL_GRN='\e[32m'
+COL_YLW='\e[33m'
+COL_WHT='\e[37m'
+COL_DEF='\e[0m'
+CLR_RST='\033[0K'
+
+timestamp() { echo -ne $COL_YLW"[`date +%H:%M:%S`] "; }
+
+# prints error message and exits with return code 1
+# $1 - error message
+error() { echo; timestamp; echo -e '\e[31m'$1$COL_DEF; exit 1; }
+
+# $1 - action
+# $2 - message
+status() { echo -ne "\r"; timestamp; echo -ne $COL_WHT$1 $COL_GRN$2$COL_DEF$CLR_RST; }
+result() { echo -ne "\r"; timestamp; echo  -e $COL_WHT$1 $COL_GRN$2$CLR_RST; }
+
+# check for DIR, make it, enter
+check_make_enter() { [[ ! -d $1 ]] && mkdir $1; cd $1; }

@@ -1,9 +1,11 @@
 #!/bin/bash
 
-URL=http://mingw-w64.svn.sourceforge.net/svnroot/mingw-w64/trunk/mingw-w64-crt
+URL=(
+	http://mingw-w64.svn.sourceforge.net/svnroot/mingw-w64/trunk/mingw-w64-crt
+)
 
 CFG=(
 	--prefix=$DIR_BLD
 	--enable-lib$BITS
-	--disable-{lib$STIB,tests-unicode}
+	--disable-lib$STIB
 )
